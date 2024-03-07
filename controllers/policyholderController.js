@@ -33,21 +33,18 @@ async function getIntroductionRelationship(
   isMainNode = false,
   isLeftNode = false
 ) {
-  // 基础情况：如果级别为0，则返回空关系数组
   if (level === 0) {
     return [];
   }
 
-  // 获取直接介绍者
   const directIntroductions = await Policyholder.find({
     introducer_code: policyholder.code,
   });
 
-  // 递归获取子级关系
   const subRelationships = await Promise.all(
     directIntroductions.map(async (directIntroduction, index) => {
-      const isLeft = index === 0; // 确定当前子关系是否为左节点
-      const childLevel = level - 1; // 减少级别以递归
+      const isLeft = index === 0;
+      const childLevel = level - 1;
       return {
         code: directIntroduction.code,
         name: directIntroduction.name,
@@ -66,7 +63,6 @@ async function getIntroductionRelationship(
     })
   );
 
-  // 如果是主节点，则返回当前保户及其子级关系
   if (isMainNode) {
     return [
       {
@@ -82,7 +78,6 @@ async function getIntroductionRelationship(
     ];
   }
 
-  // 如果不是主节点，则只返回子级关系
   return subRelationships;
 }
 
